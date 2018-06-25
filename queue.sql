@@ -1,13 +1,18 @@
 -- List all queues
--- select * from pgq.queue;
+select * from pgq.queue;
 
 
 -- Create queue
-select from pgq.create_queue('price_q');
+select pgq.create_queue('prices_q') as st;
 
 
 -- Delete queue
--- select from pgq.drop_queue('price_q');
+select pgq.drop_queue('prices_q') as st;
+
+
+-- Check that queue exists and ready.
+-- Col 'queue_data_pfx' contains name of queue where events stored.
+select * from pgq.queue;
 
 
 -- Setup producer of queue.
@@ -19,28 +24,23 @@ select from pgq.create_queue('price_q');
 create trigger triga_prices after insert or update or delete on prices for each row execute procedure pgq.logutriga('prices_q');
 
 
--- Check that queue exists and ready.
--- Col 'queue_data_pfx' contains name of queue where events stored.
--- select * from pgq.queue;
-
-
 -- We can check events in queue using 'queue_data_pfx' col from pgq.queue;
--- select * from pgq.event_4;
+select * from pgq.event_4;
 
 
 -- Register consumer.
-select from pgq.register_consumer('prices_q', 'prices_consumer');
+select pgq.register_consumer('prices_q', 'prices_consumer') as st;
 
 
 -- Receive next batch ID for consumer
--- select pgq.next_batch('prices_q', 'prices_consumer') as batch_id;
+select pgq.next_batch('prices_q', 'prices_consumer') as batch_id;
 
 
 -- Receive batch events
--- select * from pgq.get_batch_events(11);
+select * from pgq.get_batch_events(1);
 
 
 -- Ack batch.
 -- If not to do this pgq.next_batch() will return same value.
--- select * from pgq.finish_batch(10);
+select * from pgq.finish_batch(1);
 
